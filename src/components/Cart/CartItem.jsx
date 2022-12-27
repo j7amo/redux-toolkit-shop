@@ -1,21 +1,38 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import classes from './CartItem.module.css';
+import {
+  decreaseItemQuantity,
+  increaseItemQuantity,
+} from '../../store/cartSlice';
 
 function CartItem(props) {
   const {
     item: {
-      title, quantity, total, price,
+      id, title, price, description, quantity,
     },
   } = props;
+  const dispatch = useDispatch();
+
+  const quantityIncreaseHandler = () => {
+    dispatch(increaseItemQuantity(id));
+  };
+
+  const quantityDecreaseHandler = () => {
+    dispatch(decreaseItemQuantity(id));
+  };
 
   return (
     <li className={classes.item}>
       <header>
-        <h3>{title}</h3>
+        <div>
+          <h3>{title}</h3>
+          <p>{description}</p>
+        </div>
         <div className={classes.price}>
           $
-          {total.toFixed(2)}
+          {(price * quantity).toFixed(2)}
           {' '}
           <span className={classes.itemprice}>
             ($
@@ -31,8 +48,12 @@ function CartItem(props) {
           <span>{quantity}</span>
         </div>
         <div className={classes.actions}>
-          <button type="button">-</button>
-          <button type="button">+</button>
+          <button type="button" onClick={quantityDecreaseHandler}>
+            -
+          </button>
+          <button type="button" onClick={quantityIncreaseHandler}>
+            +
+          </button>
         </div>
       </div>
     </li>
@@ -41,9 +62,10 @@ function CartItem(props) {
 
 CartItem.propTypes = {
   item: PropTypes.shape({
+    id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     quantity: PropTypes.number.isRequired,
-    total: PropTypes.number.isRequired,
+    description: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
   }).isRequired,
 };
